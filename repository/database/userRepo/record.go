@@ -1,0 +1,12 @@
+package userRepo
+
+import (
+	"gorm.io/gorm"
+)
+
+type User struct {
+	gorm.Model
+	ID       uint   `gorm:"primaryKey"`
+	Username string `gorm:"type:varchar(50);unique"`
+	Password string `gorm:"->;<-;not null" `
+}
