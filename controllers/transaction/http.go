@@ -1,7 +1,6 @@
 package transaction
 
 import (
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -121,7 +120,6 @@ func (ctrl *TransactionController) GetAllTransactions(c echo.Context) error {
 		Type:       filterType,
 		Sort:       qSort,
 	}
-	fmt.Println("params controller", params)
 	data, offsetAfterGet, totalData, err := ctrl.transactionService.GetTransactions(c.Request().Context(), params)
 	if err != nil {
 		return c.JSON(http.StatusNotFound,

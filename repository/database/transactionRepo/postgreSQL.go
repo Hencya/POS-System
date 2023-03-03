@@ -39,7 +39,6 @@ func (r *TransactionRepository) GetTransactions(ctx context.Context, params tran
 	rec := []Transaction{}
 
 	r.db.Find(&rec).Count(&totalData)
-	fmt.Println("params repo", params)
 	if params.Type != "" && params.TypeAmount != "" {
 		switch params.TypeAmount {
 		case "max":

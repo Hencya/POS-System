@@ -2,7 +2,6 @@ package transactionEntity
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"POS-System/app/middlewares/auth"
@@ -44,7 +43,6 @@ func (s *TransactionServices) GetTransactions(ctx context.Context, params ParamG
 		params.Offset = (params.Page - 1) * params.Limit
 	}
 
-	fmt.Println("params usecase ", params)
 	res, totalData, err := s.TransactionRepository.GetTransactions(ctx, params)
 	if err != nil {
 		return &[]Domain{}, -1, -1, businesses.ErrNotFoundTransaction
