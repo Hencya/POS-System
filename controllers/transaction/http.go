@@ -1,6 +1,7 @@
 package transaction
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -44,7 +45,6 @@ func (ctrl *TransactionController) CreateNewTransaction(c echo.Context) error {
 	domain := transactionEntity.Domain{}
 	copier.Copy(&domain, &req)
 	domain.CreatedBy = Username
-	//domain.Date = time.Now()
 
 	data, err := ctrl.transactionService.CreateNewTransaction(ctx, &domain)
 	if err != nil {
@@ -59,12 +59,70 @@ func (ctrl *TransactionController) CreateNewTransaction(c echo.Context) error {
 }
 
 func (ctrl *TransactionController) GetAllTransactions(c echo.Context) error {
-	page, _ := strconv.Atoi(c.QueryParam("page"))
-	if page <= 0 {
-		page = 1
+	query := c.QueryParams()
+	var page, filterAmount int
+	var filterType, TypeAmount, qSort string
+	offset := 0
+	limit := 10
+	params := transactionEntity.ParamGetTransactions{}
+
+	if pageStr := query.Get("page"); pageStr != "" {
+		page, _ = strconv.Atoi(pageStr)
+
+		if page <= 0 {
+			page = 1
+		}
 	}
 
-	data, offset, limit, totalData, err := ctrl.transactionService.GetTransactions(c.Request().Context(), page)
+	if offsetStr := query.Get("offset"); offsetStr != "" {
+		offset, _ = strconv.Atoi(offsetStr)
+	}
+
+	if limitStr := query.Get("limit"); limitStr != "" {
+		limit, _ = strconv.Atoi(limitStr)
+	}
+
+	filter := query.Get("filter")
+	switch filter {
+	case "min_amount":
+		if minAmountStr := query.Get("min_amount"); minAmountStr != "" {
+			minAmount, _ := strconv.Atoi(minAmountStr)
+			filterAmount = minAmount
+			TypeAmount = "min"
+		}
+	case "max_amount":
+		if maxAmountStr := query.Get("max_amount"); maxAmountStr != "" {
+			maxAmount, _ := strconv.Atoi(maxAmountStr)
+			filterAmount = maxAmount
+			TypeAmount = "max"
+		}
+	}
+
+	filterType = query.Get("type")
+
+	sort := query.Get("sort")
+	switch sort {
+	case "amount_asc":
+		qSort = "amount ASC"
+	case "amount_desc":
+		qSort = "amount DESC"
+	case "date_asc":
+		qSort = "date ASC"
+	case "date_desc":
+		qSort = "date DESC"
+	}
+
+	params = transactionEntity.ParamGetTransactions{
+		Page:       page,
+		Offset:     offset,
+		Limit:      limit,
+		Amount:     filterAmount,
+		TypeAmount: TypeAmount,
+		Type:       filterType,
+		Sort:       qSort,
+	}
+	fmt.Println("params controller", params)
+	data, offsetAfterGet, totalData, err := ctrl.transactionService.GetTransactions(c.Request().Context(), params)
 	if err != nil {
 		return c.JSON(http.StatusNotFound,
 			helpers.BuildErrorResponse("Transaction Doesn't Exist", http.StatusNotFound,
@@ -74,7 +132,7 @@ func (ctrl *TransactionController) GetAllTransactions(c echo.Context) error {
 	res := []response.Transaction{}
 	resPage := response.Page{
 		Limit:     limit,
-		Offset:    offset,
+		Offset:    offsetAfterGet,
 		TotalData: totalData,
 	}
 

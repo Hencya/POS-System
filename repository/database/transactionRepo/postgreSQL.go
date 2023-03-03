@@ -32,15 +32,46 @@ func (r *TransactionRepository) CreateNewTransaction(ctx context.Context, data *
 	return &domain, nil
 }
 
-func (r *TransactionRepository) GetTransactions(ctx context.Context, offset, limit int) (*[]transactionEntity.Domain, int64, error) {
+func (r *TransactionRepository) GetTransactions(ctx context.Context, params transactionEntity.ParamGetTransactions) (*[]transactionEntity.Domain, int64, error) {
 	var totalData int64
+	var err error
 	domain := []transactionEntity.Domain{}
 	rec := []Transaction{}
 
 	r.db.Find(&rec).Count(&totalData)
-	err := r.db.Limit(limit).Offset(offset).Find(&rec).Error
+	fmt.Println("params repo", params)
+	if params.Type != "" && params.TypeAmount != "" {
+		switch params.TypeAmount {
+		case "max":
+			err = r.db.Where("type = ? AND amount <= ?", params.Type, params.Amount).
+				Order(params.Sort).Limit(params.Limit).Offset(params.Offset).
+				Find(&rec).Error
+		case "min":
+			err = r.db.Where("type = ? AND amount >= ?", params.Type, params.Amount).
+				Order(params.Sort).Limit(params.Limit).Offset(params.Offset).
+				Find(&rec).Error
+		}
+	} else if params.Type == "" && params.TypeAmount != "" {
+		switch params.TypeAmount {
+		case "max":
+			err = r.db.Where("amount <= ?", params.Amount).
+				Order(params.Sort).Limit(params.Limit).Offset(params.Offset).
+				Find(&rec).Error
+		case "min":
+			err = r.db.Where("amount >= ?", params.Amount).
+				Order(params.Sort).Limit(params.Limit).Offset(params.Offset).
+				Find(&rec).Error
+		}
+	} else if params.Type != "" && params.TypeAmount == "" {
+		err = r.db.Where("type = ?", params.Type).Order(params.Sort).Limit(params.Limit).Offset(params.Offset).
+			Find(&rec).Error
+	} else {
+		err = r.db.Order(params.Sort).Limit(params.Limit).Offset(params.Offset).
+			Find(&rec).Error
+	}
+
 	if err != nil {
-		return nil, 0, err
+		return nil, 0, fmt.Errorf("failed to query transactions: %w", err)
 	}
 
 	copier.Copy(&domain, &rec)

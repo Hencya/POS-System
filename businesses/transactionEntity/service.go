@@ -2,6 +2,7 @@ package transactionEntity
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"POS-System/app/middlewares/auth"
@@ -33,30 +34,29 @@ func (s *TransactionServices) CreateNewTransaction(ctx context.Context, data *Do
 	return res, nil
 }
 
-func (s *TransactionServices) GetTransactions(ctx context.Context, page int) (*[]Domain, int, int, int64, error) {
+func (s *TransactionServices) GetTransactions(ctx context.Context, params ParamGetTransactions) (*[]Domain, int, int64, error) {
 	ctx, cancel := context.WithTimeout(ctx, s.ContextTimeout)
 	defer cancel()
 
-	var offset int
-	limit := 5
-	if page == 1 {
-		offset = 0
+	if params.Page == 1 {
+		params.Offset = 0
 	} else {
-		offset = (page - 1) * 5
+		params.Offset = (params.Page - 1) * params.Limit
 	}
 
-	res, totalData, err := s.TransactionRepository.GetTransactions(ctx, offset, limit)
+	fmt.Println("params usecase ", params)
+	res, totalData, err := s.TransactionRepository.GetTransactions(ctx, params)
 	if err != nil {
-		return &[]Domain{}, -1, -1, -1, businesses.ErrNotFoundTransaction
+		return &[]Domain{}, -1, -1, businesses.ErrNotFoundTransaction
 	}
 
-	return res, offset, limit, totalData, nil
+	return res, params.Offset, totalData, nil
 }
 
 func (s *TransactionServices) UpdateTransactionById(ctx context.Context, data *Domain, id uint) (*Domain, error) {
 	ctx, cancel := context.WithTimeout(ctx, s.ContextTimeout)
 	defer cancel()
-	
+
 	dataUpdated, err := s.TransactionRepository.UpdateTransactionById(ctx, id, data)
 	if err != nil {
 		return &Domain{}, businesses.ErrInternalServer
