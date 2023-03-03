@@ -4,6 +4,7 @@ Example Golang API backend rest about a simple case Point Of Sale using Echo Fra
 
 ## User Dummy Login
   Username = username
+  <br />
   Password = password
 
 ## Command
@@ -25,3 +26,6 @@ $ go run main.go
 |                 | */api/v1/transaction*      | *GET*      |
 |                 | */api/v1/transaction/:id*  | *DELETE*   |
 |                 | */api/v1/transaction/:id*  | *PUT*      |
+  
+  
+
