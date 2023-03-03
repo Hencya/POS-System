@@ -14,9 +14,3 @@ type UserLogin struct {
 	Username string `json:"username"`
 	Token    string `json:"token"`
 }
-
-type Page struct {
-	Offset    int   `json:"offset"`
-	Limit     int   `json:"limit"`
-	TotalData int64 `json:"total_data"`
-}

@@ -8,4 +8,5 @@ var (
 	ErrDuplicateUsername        = errors.New("Username already used")
 	ErrUsernameNotRegistered    = errors.New("Username Not Registered")
 	ErrUsernamePasswordNotFound = errors.New("(Email) Or (Password) Empty")
+	ErrNotFoundTransaction      = errors.New("Transaction Does'nt Exist")
 )

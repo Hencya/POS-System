@@ -23,7 +23,7 @@ func (cl *ControllerList) RouteRegister(echo *echo.Echo) {
 	transactions := echo.Group("api/v1/transactions")
 	transactions.Use(middleware.JWTWithConfig(cl.JWTMiddleware))
 	transactions.POST("", cl.TransactionController.CreateNewTransaction)
-	//transactions.PUT("/:uuid", cl.WorkDayController.UpdateWorkDayById)
-	//transactions.GET("/queryDay", cl.WorkDayController.FindWorkDayByDay)
-	//transactions.DELETE("/:uuid", cl.WorkDayController.DeleteWorkDayByUuid)
+	transactions.GET("", cl.TransactionController.GetAllTransactions)
+	transactions.DELETE("/:id", cl.TransactionController.DeleteTransaction)
+	transactions.PUT("/:id", cl.TransactionController.UpdateTransaction)
 }
