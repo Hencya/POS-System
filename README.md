@@ -1,6 +1,6 @@
 # Golang Point Of Sale
 
-Example Golang API backend rest about a simple case Point Of Sale using Echo Framework and Gorm ORM Database.
+Example Golang API backend rest about a simple case Point Of Sale using Echo Framework and Gorm ORM and PostgreSQL Database.
 
 ## User Dummy Login
   Username = username
