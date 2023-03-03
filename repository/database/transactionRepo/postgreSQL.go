@@ -60,10 +60,6 @@ func (r *TransactionRepository) UpdateTransactionById(ctx context.Context, id ui
 		return &transactionEntity.Domain{}, err
 	}
 
-	//if err := r.db.First(&rec, "id = ?", id).Updates(&recData).Error; err != nil {
-	//	return &transactionEntity.Domain{}, err
-	//}
-
 	copier.Copy(&domain, &rec)
 	return &domain, nil
 }
