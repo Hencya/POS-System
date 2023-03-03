@@ -20,7 +20,7 @@ $ go run main.go
 | **Nama**        | **Route**                  | **Method** |
 | --------------- | -------------------------- | ---------- |
 | **User**        |                            |            |
-|                 | */api/v1/auth/login*        | *POST*     |
+|                 | */api/v1/user/login*        | *POST*     |
 | **Transaction** |                            |            |
 |                 | */api/v1/transaction*      | *POST*     |
 |                 | */api/v1/transaction*      | *GET*      |
